@@ -1,0 +1,30 @@
+char junk;
+String inputString=""; int stateLED = LOW; int pinButton = 2;
+int LED = 2;
+int LED2 = 8;
+int stateButton;
+int previous = LOW; long time = 0;
+long debounce = 200;
+//output
+ 
+ void setup() // run once, when the sketch starts {
+Serial.begin(9600); // set the baud rate to 9600, same should be of your Serial Monitor
+pinMode(12, OUTPUT); pinMode(pinButton, INPUT);
+}
+void loop() {
+if(Serial.available()){ while(Serial.available())
+{
+char inChar = (char)Serial.read(); //read the input
+inputString += inChar;
+}
+Serial.println(inputString); while (Serial.available() > 0) { junk = Serial.read() ; } if(inputString = "on" ){
+//make a string of the characters coming on serial
+// clear the serial buffer
+//in case of 'on' turn the LED on
+
+if (stateLED == LOW){ digitalWrite(12, HIGH); stateLED = HIGH;
+}
+else if (stateLED == HIGH){ digitalWrite(12, LOW); stateLED = LOW ;
+}
+}
+inputString = "";

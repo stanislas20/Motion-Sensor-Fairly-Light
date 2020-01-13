@@ -1,0 +1,89 @@
+#include <TimeLib.h> #include <Time.h>
+#include <LiquidCrystal.h>
+
+//Variables declaration
+const int rs = 12, en = 11, d4 = 5, d5 = 4, d6 = 3, d7 = 2; LiquidCrystal LCD(rs, en, d4, d5, d6, d7);
+int theHours ,theMinutes, theSeconds, days, months, years;
+//Initializing String for Date and Time for user input instructions
+String currentDate = "Please enter date as shown in format MM/DD/YYYY "; String currentTime = "Enter time as shown -> HH:MM:SS ";
+String dateEntered, timeEntered;
+//void setup function 
+void setup()
+{
+Serial.begin(9600);
+LCD.begin(16, 2);// LCD screen 16x2
+}//end void setup
+ 
+ // loop void loop() {
+Serial.println(currentTime); //Prints time
+//Begin while loop when true for time while (1)
+{
+if (Serial.available() == 1){ break;}// Checks if time valid data is arrived then break }
+if (Serial.available() == 1) {
+timeEntered = Serial.readString(); timeEnteredFunction(timeEntered); //Function call to check time
+setTime(theHours, theMinutes, theSeconds, days, months, years); // set the time
+clock(); // clock function to set the clock }// end if
+}// end while loop
+//
+
+ void timeEnteredFunction(String currentInput) {
+String hours, minutes, seconds; //Initializing string variables
+//Parsing time starting at index 0 to 10 values, ':' as the end value at each section of time. hours = currentInput.substring(0, currentInput.indexOf(":"));
+minutes = currentInput.substring(5, currentInput.indexOf(":") + 1);
+seconds = currentInput.substring(6);
+//Time string variable values are converted to integers theHours = hours.toInt();
+theMinutes = minutes.toInt();
+theSeconds = seconds.toInt();
+//Conditional statement to check out of range values for time
+if ((theHours < 0) || (theHours > 23) || (theMinutes < 0) || (theMinutes > 59) || (theSeconds < 0) || (theSeconds > 59))
+{
+Serial.println("Time entered is out of range, Please re-enter "); LCD.print("invalid time");
+Serial.println(currentTime); //Prints time string
+while (1)//Condition while true
+{
+if (Serial.available() == 1){ break; } // Checks if time valid data }
+if (Serial.available() == 1)
+
+ {
+timeEntered = Serial.readString();//reads characters f timeEnteredFunction(timeEntered);//---
+}// end if }
+}// end function
+//clock function void clock()
+{
+while (1)//Condition while true {
+time_t t = now(); // Returns the number of seconds since Jan 1 1970. Serial.print(hour(t));
+Serial.print(minute(t));
+Serial.print(second(t));
+Serial.println(); Serial.println(day(t));
+Serial.println(month(t)); 
+Serial.println(year(t));
+delay(1000);
+LCD.clear();
+
+
+ printTime(hour(t), minute(t), second(t)); }
+}
+//End of clock function
+// print time
+void printTime(int hour, minute, int second) {
+// Position the LCD cursor to relevant col and row, and prints time LCD.setCursor(10, 0);
+if (second < 10){ LCD.print("0"); }
+LCD.print(second); LCD.setCursor(8, 0); LCD.print(":");
+LCD.setCursor(5, 0); LCD.print(minute); LCD.setCursor(3, 0); LCD.print(":");
+LCD.setCursor(0, 0);
+
+ LCD.print(hour);
+// checking the range of the hours
+if((hour == 12) ||(hour == 13) || (hour == 14) || (hour == 15) ||(hour == 16)){
+LCD.setCursor(0,1);// positioning the cursor of the lcd screen to the bottom left
+LCD.print("Good Afternoon"); // displaying good afternoon }
+// checking the range of the hours
+else if((hour == 17) ||(hour == 18) || (hour == 19) ){
+LCD.setCursor(0,1);// positioning the cursor of the lcd screen to the bottom left LCD.print("Good Evening"); // print message on the LCD
+}
+else if((hour == 20) ||(hour == 21) || (hour == 22) ||(hour == 23) ){ LCD.setCursor(0,1); // positioning the cursor of the lcd screen to the bottom left
+LCD.print("Good Night"); // print message on the LCD }
+else{
+LCD.setCursor(0,1);// positioning the cursor of the lcd screen to the bottom left LCD.print("Good Morning"); // print message on the LCD
+}
+}
